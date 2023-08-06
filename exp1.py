@@ -21,10 +21,16 @@ def gofetch():
     options = st.sidebar.multiselect(
         "Choose your parameter(s)",
         ["PSRJ", "F0", "P0", "P1", "RaJ", "DecJ"],
-        default="PSRJ",
-    )
-    nan_replacer = st.sidebar.button("replace nan with 0")
-    nan_remover = st.sidebar.button("remove rows with nan")
+        default="PSRJ")
+    # Use beta_columns to place buttons next to each other
+    col1, col2 = st.sidebar.columns(2)
+    with col1:
+        nan_replacer = st.button("replace nan with 0")
+    with col2:
+        nan_remover = st.button("remove rows with nan")
+
+    # nan_replacer = st.sidebar.button("replace nan with 0")
+    # nan_remover = st.sidebar.button("remove rows with nan")
     query = QueryATNF(options)
     df = query.pandas
     cols = list(df.columns)
@@ -36,6 +42,17 @@ def gofetch():
     elif nan_remover:
         df.dropna(axis=0, how="any", inplace=True)
     st.dataframe(df, width=2000, height=500)
+    # Set the width of the sidebar using CSS
+    st.markdown(
+        f"""
+        <style>
+        .sidebar .sidebar-content {{
+            width: 300px;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
     csv = convert_df(df)
 
     st.download_button(label = "Download Data", data=csv, file_name = "atnf_data.csv", mime = "text/csv", key='download-csv')
