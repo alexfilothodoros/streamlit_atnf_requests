@@ -108,15 +108,77 @@ def plot_sth():
 ppdot_button = st.sidebar.checkbox(r"plot a $P$ - $\dot{P}$ diagram.")
 
 
-@st.cache_resource(experimental_allow_widgets=True)
+# @st.cache_resource(experimental_allow_widgets=True)
+# def plot_query():
+#     query = QueryATNF(params=["P0", "P1", "ASSOC", "BINARY", "TYPE", "P1_I"])
+#     ppdot_vars = st.sidebar.multiselect(
+#         "Choose the pulsar types to be plotted",
+#         ["BINARY", "HE", "NRAD", "RRAT", "XINS", "AXP", "SNRs", 'ALL'],
+#         default=['ALL'])
+#     showSNRs = True if "SNRs" in ppdot_vars else False
+#     ppdot = query.ppdot(showSNRs=showSNRs, showtypes=ppdot_vars)
+#     st.write(ppdot)
+#     img = io.BytesIO()
+#     plt.savefig(img, format="png")
+#     btn = st.download_button(
+#         label="Download plot", data=img, file_name="ppdot.png", mime="image/png"
+#     )
+
+#     return 
+
+# @st.cache_resource(experimental_allow_widgets=True)
+# def plot_query():
+#     query = QueryATNF(params=["P0", "P1", "ASSOC", "BINARY", "TYPE", "P1_I"])
+#     ppdot_options = {
+#     "Binary": "BINARY",
+#     "High-energy": "HE",
+#     "Non-recycled": "NRAD",
+#     "Rotating radio": "RRAT",
+#     "X-ray emitting": "XINS",
+#     "Anomalous X-ray": "AXP",
+#     "Associated with supernova remnants": "SNRs",
+#     "All": "ALL"}
+
+#     ppdot_vars = st.sidebar.multiselect(
+#         "Choose the pulsar types to be plotted",
+#         list(ppdot_options.keys()),
+#         default=['All']
+#     )
+
+#     ppdot_dict = {ppdot_options[option]: option for option in ppdot_vars}
+#     showSNRs = True if "SNRs" in ppdot_vars else False
+#     ppdot = query.ppdot(showSNRs=showSNRs, showtypes=ppdot_vars)
+#     st.write(ppdot_vars)
+#     img = io.BytesIO()
+#     plt.savefig(img, format="png")
+#     btn = st.download_button(
+#         label="Download plot", data=img, file_name="ppdot.png", mime="image/png"
+#     )
+
+#     return 
+
+# @st.cache_resource(experimental_allow_widgets=True)
 def plot_query():
     query = QueryATNF(params=["P0", "P1", "ASSOC", "BINARY", "TYPE", "P1_I"])
+    types = {"Binary": "BINARY",
+        "High-energy": "HE",
+        "Non-recycled": "NRAD",
+        "Rotating radio": "RRAT",
+        "X-ray emitting": "XINS",
+        "Anomalous X-ray": "AXP",
+        "Associated with supernova remnants": "SNRs",
+        "All": "ALL"}
+    
+
+    ppdot_options = types.keys()
     ppdot_vars = st.sidebar.multiselect(
         "Choose the pulsar types to be plotted",
-        ["BINARY", "HE", "NRAD", "RRAT", "XINS", "AXP", "SNRs", 'ALL'],
-        default=['ALL'])
-    showSNRs = True if "SNRs" in ppdot_vars else False
-    ppdot = query.ppdot(showSNRs=showSNRs, showtypes=ppdot_vars)
+        list(ppdot_options),
+        default=list(ppdot_options)[-2]
+    )
+    ppdot_vars2 = [types[option] for option in ppdot_vars] 
+    showSNRs = True if "SNRs" in ppdot_vars2 else False
+    ppdot = query.ppdot(showSNRs=showSNRs, showtypes=ppdot_vars2)
     st.write(ppdot)
     img = io.BytesIO()
     plt.savefig(img, format="png")
@@ -124,7 +186,9 @@ def plot_query():
         label="Download plot", data=img, file_name="ppdot.png", mime="image/png"
     )
 
-    return 
+
+
+
 
 st.title("The $P$ - $\dot{P}$ diagram")
 title_alignment="""
