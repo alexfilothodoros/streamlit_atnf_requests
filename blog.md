@@ -3,10 +3,13 @@ This app can be used as a teaching tool for those who are interested in learning
 Pulsars are highly-magnetized, rotating neutron stars that emit beams of electromagnetic radiation out into space. They were first discovered in 1967 by astronomers Jocelyn Bell Burnell and Antony Hewish. Pulsars are incredibly dense objects, composed mostly of neutrons, and they are formed from the remnants of massive stars that have gone supernova.
 
 
-The app provides an easy-to-use interface for generating $P$ - $\dot{P}$ diagrams, which can be used to gain insights into the behavior of pulsars and the extreme conditions in the universe.
+The app provides an easy-to-use interface for generating $P$ - $\dot{P}$ diagrams, which can be used to gain insights into the behavior of pulsars and the extreme conditions of theenvironments close to their vicinities.
+
 The $P$ - $\dot{P}$ diagram, also known as the Pulsar Spin-Down Diagram, is a graphical representation that helps astronomers study the evolution and properties of pulsars. It plots two key parameters of pulsars: the pulsar's rotation period (P) and its rate of change of rotation period ($\dot{P}$) . This diagram provides insights into the various stages of a pulsar's life, its energy loss mechanisms, and its potential future behavior.
 
+![ppdot](https://raw.githubusercontent.com/alexfilothodoros/streamlit_atnf_requests/main/ppdot.png)
 
+# Basic Components
 The app is using psrqpy to query the ATNF pulsar catalog and retrieve the data needed to generate the $P$ - $\dot{P}$ diagrams.
 
 The [ATNF](https://www.atnf.csiro.au/) pulsar catalog is a database of pulsar properties, including their periods, period derivatives, and other characteristics. [psrqpy](https://psrqpy.readthedocs.io/en/latest/) is a Python module that provides an interface to the ATNF pulsar catalog, allowing users to query the catalog and retrieve pulsar data.
@@ -57,7 +60,7 @@ def gofetch():
 ```
 
 
-
+# Creating the $P$ - $\dot{P}$ diagram
 This code defines a function plot_query() that generates a scatter plot of pulsar period derivative versus period for a given set of pulsar types. The function uses the QueryATNF class to query the ATNF pulsar catalog and retrieve the relevant data. The types of pulsars to be plotted are selected by the user through a multiselect widget in the sidebar. The function then generates the scatter plot using matplotlib and displays it using streamlit. Finally, the function provides a download button for the plot image.
 
 ```
@@ -95,4 +98,51 @@ def plot_query():
     )
 
 ```
-![ppdot](https://raw.githubusercontent.com/alexfilothodoros/streamlit_atnf_requests/main/ppdot.png)
+# Styling
+This code defines a function called front_style() that sets the front-end style of the Streamlit app. The function is decorated with @st.cache_resource(experimental_allow_widgets=True), which caches the function's output and allows the use of experimental widgets.
+
+The function sets the font size of the app to 25px and adds a markdown description of the app. It also sets the title of the app to "The $P$ - $\dot{P}$ diagram" and adds a markdown description of what the diagram is used for. Finally, it adds a message to the user to use the option on the left to plot a $P$ - $\dot{P}$ diagram for different pulsar types.
+
+This function is called in the main block of the code when the user selects the ppdot_button checkbox.
+
+
+```
+@st.cache_resource(experimental_allow_widgets=True)
+def front_style():
+    st.markdown(
+        """
+    <style>
+    .big-font {
+        font-size:25px !important;
+    }
+    </style>
+    """,
+        unsafe_allow_html=True,
+    )
+
+    #    st.markdown('<p class="big-font">This is a test app for pulsar data query and plotting. It is based on the [ATNF pulsar catalog](https://www.atnf.csiro.au/research/pulsar/psrcat/) and [psrqpy](https://psrqpy.readthedocs.io/en/latest/).</p>', unsafe_allow_html=True)
+
+    st.markdown(
+        "This is a test app for pulsar data query and plotting. It is based on the [ATNF pulsar catalog](https://www.atnf.csiro.au/research/pulsar/psrcat/) and [psrqpy](https://psrqpy.readthedocs.io/en/latest/)."
+    )
+
+    st.title("The $P$ - $\dot{P}$ diagram")
+    title_alignment = """
+    <style>
+    #the-title {
+    text-align: center
+    }
+    </style>
+    """
+    st.markdown(title_alignment, unsafe_allow_html=True)
+    st.write(
+        """The $P$ - $\dot{P}$ diagram  helps us track pulsars' evolution, identify different pulsar populations, study emission mechanisms, and probe the properties of their interiors. By analyzing the relationship between the pulsar's period ($P$) and its derivative ($\dot{P}$), valuable insights are gained into these rapidly rotating neutron stars and their behavior. The diagram plays a crucial role in advancing our understanding of pulsars and the extreme conditions in the universe."""
+    )
+    st.write(
+        "You can use the option on the left to plot a $P$ - $\dot{P}$ diagram for different pulsar types."
+    )
+
+    return
+
+
+```
