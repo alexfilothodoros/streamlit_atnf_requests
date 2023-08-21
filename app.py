@@ -105,7 +105,6 @@ def plot_query():
         "Associated with supernova remnants": "SNRs",
         "All": "ALL",
     }
-
     ppdot_options = types.keys()
     ppdot_vars = st.sidebar.multiselect(
         "Choose the pulsar types to be plotted",
@@ -118,7 +117,6 @@ def plot_query():
         chosen_plot_types.remove("SNRs")
     else:
         pass
-
     ppdot = query.ppdot(showSNRs=showSNRs, showtypes=chosen_plot_types)
     st.write(ppdot)
     img = io.BytesIO()
