@@ -1,0 +1,98 @@
+# Fetch data about radio pulsars using streamlit
+This app can be used as a teaching tool for those who are interested in learning about pulsars and their properties. 
+Pulsars are highly-magnetized, rotating neutron stars that emit beams of electromagnetic radiation out into space. They were first discovered in 1967 by astronomers Jocelyn Bell Burnell and Antony Hewish. Pulsars are incredibly dense objects, composed mostly of neutrons, and they are formed from the remnants of massive stars that have gone supernova.
+
+
+The app provides an easy-to-use interface for generating $P$ - $\dot{P}$ diagrams, which can be used to gain insights into the behavior of pulsars and the extreme conditions in the universe.
+The $P$ - $\dot{P}$ diagram, also known as the Pulsar Spin-Down Diagram, is a graphical representation that helps astronomers study the evolution and properties of pulsars. It plots two key parameters of pulsars: the pulsar's rotation period (P) and its rate of change of rotation period ($\dot{P}$) . This diagram provides insights into the various stages of a pulsar's life, its energy loss mechanisms, and its potential future behavior.
+
+
+The app is using psrqpy to query the ATNF pulsar catalog and retrieve the data needed to generate the $P$ - $\dot{P}$ diagrams.
+
+The [ATNF](https://www.atnf.csiro.au/) pulsar catalog is a database of pulsar properties, including their periods, period derivatives, and other characteristics. [psrqpy](https://psrqpy.readthedocs.io/en/latest/) is a Python module that provides an interface to the ATNF pulsar catalog, allowing users to query the catalog and retrieve pulsar data.
+
+This code defines a function called gofetch() that fetches data from the ATNF Pulsar Catalogue using the QueryATNF function from the psrqpy package. The function allows the user to choose which parameters to fetch and provides options to replace or remove rows with NaN values. The fetched data is then filtered using the filter_data() function and displayed in a table using the dataframe() function from the streamlit package. The table is styled using CSS and a download button is provided to download the data as a CSV file.
+
+```python
+def gofetch():
+    options = st.sidebar.multiselect(
+        "Choose your parameter(s)",
+        ["PSRJ", "F0", "P0", "P1", "RaJ", "DecJ"],
+        default=["PSRJ", "P0"],
+    )
+    col1, col2 = st.sidebar.columns(2)
+    with col1:
+        nan_replacer = st.button("replace nan values to 0")
+    with col2:
+        nan_remover = st.button("remove rows with nan values")
+    query = QueryATNF(options)
+    df = query.pandas
+    cols = list(df.columns)
+    if "PSRJ" in cols:
+        cols.insert(0, cols.pop(cols.index("PSRJ")))
+        df = df.loc[:, cols]
+    if nan_replacer:
+        df = df.fillna(0)
+    elif nan_remover:
+        df.dropna(axis=0, how="any", inplace=True)
+    df = filter_data(df)
+    styles = [
+        dict(selector="td", props=[("font-size", "32pt"), ("width", "300px")]),
+        dict(
+            selector=".col_heading", props=[("font-size", "16pt"), ("width", "8000px")]
+        ),
+    ]
+    styles.append(dict(selector="table", props=[("margin", "auto")]))
+    st.dataframe(df.style.set_table_styles(styles), height=500)
+    csv = convert_df(df)
+    st.download_button(
+        label="Download Data",
+        data=csv,
+        file_name="atnf_data.csv",
+        mime="text/csv",
+        key="download-csv",
+    )
+
+    return df
+```
+
+
+
+This code defines a function plot_query() that generates a scatter plot of pulsar period derivative versus period for a given set of pulsar types. The function uses the QueryATNF class to query the ATNF pulsar catalog and retrieve the relevant data. The types of pulsars to be plotted are selected by the user through a multiselect widget in the sidebar. The function then generates the scatter plot using matplotlib and displays it using streamlit. Finally, the function provides a download button for the plot image.
+
+```
+# @st.cache_resource(experimental_allow_widgets=True)
+def plot_query():
+    query = QueryATNF(params=["P0", "P1", "ASSOC", "BINARY", "TYPE", "P1_I"])
+    types = {
+        "Binary": "BINARY",
+        "High-energy": "HE",
+        "Non-recycled": "NRAD",
+        "Rotating radio": "RRAT",
+        "X-ray emitting": "XINS",
+        "Anomalous X-ray": "AXP",
+        "Associated with supernova remnants": "SNRs",
+        "All": "ALL",
+    }
+    ppdot_options = types.keys()
+    ppdot_vars = st.sidebar.multiselect(
+        "Choose the pulsar types to be plotted",
+        list(ppdot_options),
+        default=list(ppdot_options)[-2],
+    )
+    chosen_plot_types = [types[option] for option in ppdot_vars]
+    showSNRs = True if "SNRs" in chosen_plot_types else False
+    if "SNRs" in chosen_plot_types:
+        chosen_plot_types.remove("SNRs")
+    else:
+        pass
+    ppdot = query.ppdot(showSNRs=showSNRs, showtypes=chosen_plot_types)
+    st.write(ppdot)
+    img = io.BytesIO()
+    plt.savefig(img, format="png")
+    btn = st.download_button(
+        label="Download plot", data=img, file_name="ppdot.png", mime="image/png"
+    )
+
+```
+![ppdot](https://raw.githubusercontent.com/alexfilothodoros/streamlit_atnf_requests/main/ppdot.png)
