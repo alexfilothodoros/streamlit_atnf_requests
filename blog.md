@@ -149,5 +149,9 @@ def front_style():
 
     return
 ```
+# Wrapping up
 
-# Resources
+This app is providing an friendlier experience in getting data about radio pulsars.
+It offers some basic filtering on the two most important characteristics of these stars (the period and its derivative). This information can be plotted and the properties of different pulsar groups can be compared on a $P$ - $\dot{P}$ diagram.
+
+Enjoy!
