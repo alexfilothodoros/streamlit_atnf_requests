@@ -127,9 +127,6 @@ def front_style():
     """,
         unsafe_allow_html=True,
     )
-
-    #    st.markdown('<p class="big-font">This is a test app for pulsar data query and plotting. It is based on the [ATNF pulsar catalog](https://www.atnf.csiro.au/research/pulsar/psrcat/) and [psrqpy](https://psrqpy.readthedocs.io/en/latest/).</p>', unsafe_allow_html=True)
-
     st.markdown(
         "This is a test app for pulsar data query and plotting. It is based on the [ATNF pulsar catalog](https://www.atnf.csiro.au/research/pulsar/psrcat/) and [psrqpy](https://psrqpy.readthedocs.io/en/latest/)."
     )
